@@ -32,19 +32,53 @@
         </tr>
       </thead>
       <tbody>
+      @foreach (Machine? machine  in ViewBag.machines)
+      {
         <tr class="border-t hover:bg-muted/30">
-          <td class="px-4 py-3 font-mono text-xs text-muted-foreground">EQ-001</td>
-          <td class="px-4 py-3 font-medium">Core Switch DC1</td>
-          <td class="px-4 py-3 text-muted-foreground">Switch L3</td>
-          <td class="px-4 py-3 font-mono text-xs">10.0.0.1</td>
-          <td class="px-4 py-3 text-muted-foreground">Datacenter Paris</td>
-          <td class="px-4 py-3">182j</td>
-          <td class="px-4 py-3 text-muted-foreground">il y a 2 min</td>
-          <td class="px-4 py-3"><span
-              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-stable text-status-stable-foreground"><span
-                class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Stable</span></td>
-          <td class="px-4 py-3 text-right"><button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"><svg
+          <td class="px-4 py-3 font-mono text-xs text-muted-foreground">@machine?.Id</td>
+          <td class="px-4 py-3 font-medium">@machine?.Name</td>
+          <td class="px-4 py-3 text-muted-foreground">@machine?.Type</td>
+          <td class="px-4 py-3 font-mono text-xs">@machine?.Ip</td>
+          <td class="px-4 py-3 text-muted-foreground">@machine?.Site</td>
+          <td class="px-4 py-3">@machine?.BootTime</td>
+          <td class="px-4 py-3 text-muted-foreground">@machine?.LastReport?.CreationTime</td>
+          <td class="px-4 py-3">
+            @switch (@machine?.LastReport?.State)
+            {
+              case MachineState.Stable :
+              {
+                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-stable text-status-stable-foreground">
+                  <span class="h-1.5 w-1.5 rounded-full bg-current opacity-80">
+                  </span>
+                  Stable
+                </span>
+                break;
+              } 
+              case MachineState.Critique :
+              {
+            <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-critical text-status-critical-foreground"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Critique</span>
+                
+                break;
+              } 
+              case MachineState.RetabliDocumente :
+              {
+                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-resolved text-status-resolved-foreground"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Rétabli (documenté)</span>
+
+                break;
+              } 
+              case MachineState.RetabliUndocumente :
+              {
+            <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-undocumented text-status-undocumented-foreground"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Rétabli (sans documentation)</span>
+                
+                break;
+              } 
+            }
+            </td>
+          <td class="px-4 py-3 text-right">
+            <button
+              onclick="alert(@machine?.Name)"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs">
+              <svg
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-eye mr-1 h-3.5 w-3.5" aria-hidden="true">
@@ -54,117 +88,27 @@
                 <circle cx="12" cy="12" r="3"></circle>
               </svg> Détail</button></td>
         </tr>
-        <tr class="border-t hover:bg-muted/30">
-          <td class="px-4 py-3 font-mono text-xs text-muted-foreground">EQ-002</td>
-          <td class="px-4 py-3 font-medium">Firewall Edge</td>
-          <td class="px-4 py-3 text-muted-foreground">Firewall</td>
-          <td class="px-4 py-3 font-mono text-xs">10.0.0.254</td>
-          <td class="px-4 py-3 text-muted-foreground">Datacenter Paris</td>
-          <td class="px-4 py-3">0j</td>
-          <td class="px-4 py-3 text-muted-foreground">il y a 1 min</td>
-          <td class="px-4 py-3"><span
-              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-critical text-status-critical-foreground"><span
-                class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Critique</span></td>
-          <td class="px-4 py-3 text-right"><button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"><svg
-                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-eye mr-1 h-3.5 w-3.5" aria-hidden="true">
-                <path
-                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0">
-                </path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg> Détail</button></td>
-        </tr>
-        <tr class="border-t hover:bg-muted/30">
-          <td class="px-4 py-3 font-mono text-xs text-muted-foreground">EQ-003</td>
-          <td class="px-4 py-3 font-medium">Serveur App Prod</td>
-          <td class="px-4 py-3 text-muted-foreground">Serveur Linux</td>
-          <td class="px-4 py-3 font-mono text-xs">10.0.10.12</td>
-          <td class="px-4 py-3 text-muted-foreground">Datacenter Lyon</td>
-          <td class="px-4 py-3">47j</td>
-          <td class="px-4 py-3 text-muted-foreground">il y a 3 min</td>
-          <td class="px-4 py-3"><span
-              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-resolved text-status-resolved-foreground"><span
-                class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Rétabli (documenté)</span></td>
-          <td class="px-4 py-3 text-right"><button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"><svg
-                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-eye mr-1 h-3.5 w-3.5" aria-hidden="true">
-                <path
-                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0">
-                </path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg> Détail</button></td>
-        </tr>
-        <tr class="border-t hover:bg-muted/30">
-          <td class="px-4 py-3 font-mono text-xs text-muted-foreground">EQ-004</td>
-          <td class="px-4 py-3 font-medium">Baie de stockage SAN-A</td>
-          <td class="px-4 py-3 text-muted-foreground">Stockage</td>
-          <td class="px-4 py-3 font-mono text-xs">10.0.20.5</td>
-          <td class="px-4 py-3 text-muted-foreground">Datacenter Paris</td>
-          <td class="px-4 py-3">365j</td>
-          <td class="px-4 py-3 text-muted-foreground">il y a 5 min</td>
-          <td class="px-4 py-3"><span
-              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-stable text-status-stable-foreground"><span
-                class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Stable</span></td>
-          <td class="px-4 py-3 text-right"><button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"><svg
-                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-eye mr-1 h-3.5 w-3.5" aria-hidden="true">
-                <path
-                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0">
-                </path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg> Détail</button></td>
-        </tr>
-        <tr class="border-t hover:bg-muted/30">
-          <td class="px-4 py-3 font-mono text-xs text-muted-foreground">EQ-005</td>
-          <td class="px-4 py-3 font-medium">Routeur WAN Site B</td>
-          <td class="px-4 py-3 text-muted-foreground">Routeur</td>
-          <td class="px-4 py-3 font-mono text-xs">10.0.30.1</td>
-          <td class="px-4 py-3 text-muted-foreground">Site Bordeaux</td>
-          <td class="px-4 py-3">12j</td>
-          <td class="px-4 py-3 text-muted-foreground">il y a 4 min</td>
-          <td class="px-4 py-3"><span
-              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-undocumented text-status-undocumented-foreground"><span
-                class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Rétabli (sans documentation)</span></td>
-          <td class="px-4 py-3 text-right"><button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"><svg
-                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-eye mr-1 h-3.5 w-3.5" aria-hidden="true">
-                <path
-                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0">
-                </path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg> Détail</button></td>
-        </tr>
-        <tr class="border-t hover:bg-muted/30">
-          <td class="px-4 py-3 font-mono text-xs text-muted-foreground">EQ-006</td>
-          <td class="px-4 py-3 font-medium">Hyperviseur ESX-03</td>
-          <td class="px-4 py-3 text-muted-foreground">Hyperviseur</td>
-          <td class="px-4 py-3 font-mono text-xs">10.0.40.13</td>
-          <td class="px-4 py-3 text-muted-foreground">Datacenter Lyon</td>
-          <td class="px-4 py-3">98j</td>
-          <td class="px-4 py-3 text-muted-foreground">il y a 1 min</td>
-          <td class="px-4 py-3"><span
-              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-stable text-status-stable-foreground"><span
-                class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Stable</span></td>
-          <td class="px-4 py-3 text-right"><button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"><svg
-                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-eye mr-1 h-3.5 w-3.5" aria-hidden="true">
-                <path
-                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0">
-                </path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg> Détail</button></td>
-        </tr>
+      }
       </tbody>
     </table>
   </div>
 </div>
+
+@*
+// stable badge
+<span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-stable text-status-stable-foreground">
+  <span class="h-1.5 w-1.5 rounded-full bg-current opacity-80">
+  </span>
+  Stable
+</span>
+
+//critical badge
+<span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-critical text-status-critical-foreground"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Critique</span>
+
+//documented badge
+<span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-resolved text-status-resolved-foreground"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Rétabli (documenté)</span>
+
+//undocumented badge
+
+<span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-undocumented text-status-undocumented-foreground"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Rétabli (sans documentation)</span>
+*@

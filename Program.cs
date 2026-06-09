@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using sutnance.Areas.Identity.Data;
 using sutnance.Data;
+using sutnance.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("sutnanceContextConnection") ?? throw new InvalidOperationException("Connection string 'sutnanceContextConnection' not found.");
 
@@ -11,6 +13,9 @@ builder.Services.AddDefaultIdentity<sutnanceUser>(options => options.SignIn.Requ
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+
+builder.Services.AddTransient<MachineManager, MachineManager>();
 
 var app = builder.Build();
 
@@ -26,7 +31,14 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+// seeding data
 
+using (var scope = app.Services.CreateScope())
+{
+    var machineManager = scope.ServiceProvider
+        .GetRequiredService<MachineManager>();
+    await machineManager.SeedAsync();
+}
 app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllerRoute(

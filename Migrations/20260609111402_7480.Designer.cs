@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sutnance.Data;
 
@@ -11,9 +12,11 @@ using sutnance.Data;
 namespace sutnance.Migrations
 {
     [DbContext(typeof(sutnanceContext))]
-    partial class sutnanceContextModelSnapshot : ModelSnapshot
+    [Migration("20260609111402_7480")]
+    partial class _7480
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

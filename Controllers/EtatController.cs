@@ -7,10 +7,14 @@ using sutnance.Models;
 namespace sutnance.Controllers
 {
     [Authorize]
-    public class EtatController : Controller
+    [Route("[controller]")]
+    public class EtatController(MachineManager machineManager) : Controller
     {
-        public IActionResult Index()
+        [HttpGet]
+        /*[Route("{page:int?}")]*/
+        public async Task<IActionResult> Index(string? search,MachineState? state,int page=0)
         {
+            ViewBag.machines = await machineManager.Get(search, state, page);
             return View();
         }
     }

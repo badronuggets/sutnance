@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sutnance.Data;
 
@@ -11,9 +12,11 @@ using sutnance.Data;
 namespace sutnance.Migrations
 {
     [DbContext(typeof(sutnanceContext))]
-    partial class sutnanceContextModelSnapshot : ModelSnapshot
+    [Migration("20260609105135_important stuff 4")]
+    partial class importantstuff4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,11 +237,11 @@ namespace sutnance.Migrations
 
                     b.Property<string>("MachineId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReportId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -248,10 +251,6 @@ namespace sutnance.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MachineId");
-
-                    b.HasIndex("ReportId");
 
                     b.ToTable("Historiques");
                 });
@@ -298,14 +297,12 @@ namespace sutnance.Migrations
 
                     b.Property<string>("MachineId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("State")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MachineId");
 
                     b.ToTable("Reports");
                 });
@@ -359,36 +356,6 @@ namespace sutnance.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("sutnance.Models.Historique", b =>
-                {
-                    b.HasOne("sutnance.Models.Machine", "Machine")
-                        .WithMany()
-                        .HasForeignKey("MachineId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("sutnance.Models.Report", "Report")
-                        .WithMany()
-                        .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Machine");
-
-                    b.Navigation("Report");
-                });
-
-            modelBuilder.Entity("sutnance.Models.Report", b =>
-                {
-                    b.HasOne("sutnance.Models.Machine", "Machine")
-                        .WithMany()
-                        .HasForeignKey("MachineId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Machine");
                 });
 #pragma warning restore 612, 618
         }

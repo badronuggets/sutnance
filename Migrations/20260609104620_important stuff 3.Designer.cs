@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sutnance.Data;
 
@@ -11,9 +12,11 @@ using sutnance.Data;
 namespace sutnance.Migrations
 {
     [DbContext(typeof(sutnanceContext))]
-    partial class sutnanceContextModelSnapshot : ModelSnapshot
+    [Migration("20260609104620_important stuff 3")]
+    partial class importantstuff3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -366,13 +369,13 @@ namespace sutnance.Migrations
                     b.HasOne("sutnance.Models.Machine", "Machine")
                         .WithMany()
                         .HasForeignKey("MachineId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("sutnance.Models.Report", "Report")
                         .WithMany()
                         .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Machine");
@@ -385,7 +388,7 @@ namespace sutnance.Migrations
                     b.HasOne("sutnance.Models.Machine", "Machine")
                         .WithMany()
                         .HasForeignKey("MachineId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Machine");
