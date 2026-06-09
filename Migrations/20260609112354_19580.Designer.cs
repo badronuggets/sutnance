@@ -12,8 +12,8 @@ using sutnance.Data;
 namespace sutnance.Migrations
 {
     [DbContext(typeof(sutnanceContext))]
-    [Migration("20260609110703_14061")]
-    partial class _14061
+    [Migration("20260609112354_19580")]
+    partial class _19580
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -369,13 +369,13 @@ namespace sutnance.Migrations
                     b.HasOne("sutnance.Models.Machine", "Machine")
                         .WithMany()
                         .HasForeignKey("MachineId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("sutnance.Models.Report", "Report")
                         .WithMany()
                         .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Machine");
@@ -388,7 +388,7 @@ namespace sutnance.Migrations
                     b.HasOne("sutnance.Models.Machine", "Machine")
                         .WithMany()
                         .HasForeignKey("MachineId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Machine");

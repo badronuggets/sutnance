@@ -16,6 +16,7 @@ builder.Services.AddControllersWithViews();
 
 
 builder.Services.AddTransient<MachineManager, MachineManager>();
+builder.Services.AddTransient<ReportManager, ReportManager>();
 
 var app = builder.Build();
 
@@ -37,7 +38,9 @@ using (var scope = app.Services.CreateScope())
 {
     var machineManager = scope.ServiceProvider
         .GetRequiredService<MachineManager>();
+    var reportManager = scope.ServiceProvider.GetRequiredService<ReportManager>();
     await machineManager.SeedAsync();
+    await reportManager.SeedAsync();
 }
 app.UseAuthorization();
 app.MapRazorPages();

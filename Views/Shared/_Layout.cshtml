@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Security.Claims
+@{
 IgnoreSection("Scripts");
 }
 <!DOCTYPE html>
@@ -6,6 +7,7 @@ IgnoreSection("Scripts");
 
 <head>
   <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="js/site.js"></script>
   <link rel="stylesheet" href="css/site.css">
@@ -998,8 +1000,8 @@ IgnoreSection("Scripts");
               <div class="flex items-center justify-between gap-2 px-2 py-2">
                 <div class="text-xs">
 
-                  <div class="font-medium">username here</div>
-                  <div class="text-sidebar-foreground/60">role here (eg: admin)</div>
+                  <div class="font-medium">@User.Identity?.Name</div>
+                  <div class="text-sidebar-foreground/60">@User.FindFirst(ClaimTypes.Role)?.Value</div>
                 </div><button
                   class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-sidebar-foreground/80 hover:bg-sidebar-accent"><svg
                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"

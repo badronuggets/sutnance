@@ -5,7 +5,7 @@
 namespace sutnance.Migrations
 {
     /// <inheritdoc />
-    public partial class importantstuff2 : Migration
+    public partial class _19580 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

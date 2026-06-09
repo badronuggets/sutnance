@@ -25,11 +25,39 @@ public class Machine : AuditedTable
     public string Name { get; set; }
     public string Type { get; set; }
     public string Ip { get; set; }
-    public string Site { get; set; }
-    public DateTime BootTime { get; set; }
+    public string Site { get; set; } // location not website lol
+    public DateTime BootTime { get; set; } // for uptime . ill use sysUpTime from snmp. probably put that in the report calss too
 
     [NotMapped]
     public Report? LastReport;
+    [NotMapped]
+    public string UpTime
+    {
+        get
+        {
+            try
+            {
+                DateTime now = DateTime.Now;
+
+                TimeSpan diff = now - BootTime;
+
+                double absDays = diff.TotalDays;
+
+                if (absDays < 1)
+                {
+                    int hours = (int)Math.Round(diff.TotalHours);
+                    return $"{hours} heurs";
+                }
+
+                int days = (int)Math.Round(absDays);
+                return $"{days} jours";
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
+    }
 }
 [PrimaryKey(nameof(Id))]
 
@@ -40,6 +68,35 @@ public class Report : AuditedTable
     public MachineState State { get; set; }
     public string MachineId { get; set; }
     public Machine Machine { get; set; }
+
+    [NotMapped]
+    public string LastCheck
+    {
+        get
+        {
+            try
+            {
+                DateTime now = DateTime.Now;
+
+                TimeSpan diff = now - CreationTime;
+
+                double absDays = diff.TotalDays;
+
+                if (absDays < 1)
+                {
+                    int hours = (int)Math.Round(diff.TotalHours);
+                    return $"{hours} heurs";
+                }
+
+                int days = (int)Math.Round(absDays);
+                return $"{days} jours";
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
+    }
 }
 
 [PrimaryKey(nameof(Id))]

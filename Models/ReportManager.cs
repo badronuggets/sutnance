@@ -1,28 +1,26 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using sutnance.Data;
-
 namespace sutnance.Models;
 
-public class MachineManager(sutnanceContext dbContext)
+public class ReportManager(sutnanceContext dbContext)
 {
-    private async Task<string> GetMachineId()
+    private async Task<string> GetReportId()
     {
         try
         {
             var lastMachine =
-                await dbContext.Machines.OrderByDescending(m => m.CreationTime).Take(1).SingleAsync();
+                await dbContext.Reports.OrderByDescending(m => m.CreationTime).Take(1).SingleAsync();
             var lastId = Convert.ToInt32(lastMachine.Id.Split('-')[1]);
-            return "EQ-" + ((lastId + 1).ToString());
+            return "R-" + ((lastId + 1).ToString());
 
         }
         catch (InvalidOperationException)
         {
-            return "EQ-001";
+            return "R-001";
         }
     }
 
-    public async Task<List<Machine>> Get(string? search, MachineState? state, int page = 0)
+    /*public async Task<List<Machine>> Get(string? search, MachineState? state, int page = 0)
     {
         const int pageSize = 10;
         int skipCount = pageSize * page;
@@ -50,8 +48,7 @@ public class MachineManager(sutnanceContext dbContext)
             query = query.Where(e =>
 
                 e.Name.ToLower().Contains(search) ||
-                e.Ip.ToLower().Contains(search) ||
-                e.Id.ToLower().Contains(search) 
+                e.Ip.ToLower().Contains(search)
             );
         }
 
@@ -62,23 +59,21 @@ public class MachineManager(sutnanceContext dbContext)
 
         return await query.Skip(skipCount).Take(pageSize).ToListAsync();
     }
+    */
 
-    public async Task Create(string name, string type, string ip, string site, DateTime bootTime)
+    public async Task Create(string machineId, MachineState state)
     {
-        var machine = new Machine()
+        var report = new Report()
         {
-            Id = await GetMachineId(),
-            Name = name,
-            Type = type,
-            Ip = ip,
-            Site = site,
-            BootTime = bootTime,
+            Id = await GetReportId(),
+            State = state,
+            MachineId = machineId,
         };
-        dbContext.Machines.Add(machine);
+        dbContext.Reports.Add(report);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task Update(string id, string name, string type, string ip, string site, DateTime bootTime)
+    /*public async Task Update(string id, string name, string type, string ip, string site, DateTime bootTime)
     {
         var machine = new Machine()
         {
@@ -91,54 +86,33 @@ public class MachineManager(sutnanceContext dbContext)
         };
         dbContext.Machines.Update(machine);
         await dbContext.SaveChangesAsync();
-    }
+    }*/
 
+    /*
     public async Task Delete(string id)
     {
         var machine = await dbContext.Machines.FindAsync(id) ?? throw new InvalidOperationException();
         dbContext.Machines.Remove(machine);
         await dbContext.SaveChangesAsync();
     }
+    */
 
     public async Task SeedAsync()
     {
-        if (await dbContext.Machines.AnyAsync())
+        if (await dbContext.Reports.AnyAsync())
             return;
 
-        var types = new[] { "PC", "Switch", "Modem", "Router", "Server" };
-        var sites = new[] { "Tel Aviv", "La DEX", "Bab Ezzouar", "Algiers", "Oran" };
-
-        var rnd = new Random();
-
-        for (int i = 1; i <= 50; i++)
+        var machineIds = await dbContext.Machines.Select(m => m.Id).ToListAsync();
+        foreach (var machineid in machineIds)
         {
-            var type = types[i % types.Length];
-            var site = sites[i % sites.Length];
+            var rnd = new Random();
 
-            var randomDays = rnd.Next(1, 365);
-            var randomHours = rnd.Next(0, 24);
-            var randomMinutes = rnd.Next(0, 60);
-
-            await this.Create(
-                name: $"Machine {i}",
-                type: type,
-                ip: $"192.168.1.{i}",
-                site: site,
-                bootTime: DateTime.UtcNow
-                    .AddDays(-randomDays)
-                    .AddHours(-randomHours)
-                    .AddMinutes(-randomMinutes)
-            );
+            var states = Enum.GetValues<MachineState>();
+            var randomState = states[rnd.Next(states.Length)];
+            await this.Create(machineid,randomState);
         }
+
 
         await dbContext.SaveChangesAsync();
     }
-
-    /*public async Task SeedReports()
-    {
-        List<string> machineIds = await dbContext.Machines.Select(m => m.Id).ToListAsync();
-        
-        
-    }*/
-
 }

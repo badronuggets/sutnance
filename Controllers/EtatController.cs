@@ -17,5 +17,12 @@ namespace sutnance.Controllers
             ViewBag.machines = await machineManager.Get(search, state, page);
             return View();
         }
+[Route("Create")]
+        [HttpPost]
+        public async Task<IActionResult> Create(string name,string type,string ip,string site,DateTime bootTime)
+        {
+            await machineManager.Create(name, type, ip, site,bootTime);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

@@ -1,35 +1,66 @@
 <div class="space-y-5">
   <div class="flex flex-wrap items-end justify-between gap-3">
     <div>
-      <h1 class="text-2xl font-semibold tracking-tight">État actuel</h1>
+      <h1 class="text-2xl font-semibold tracking-tight">État actuel: </h1>
       <p class="text-sm text-muted-foreground">Liste de l'ensemble des équipements supervisés et leur état temps réel.
       </p>
-    </div><input
+      @*<p class="text-muted-foreground">@(((List<Machine>)ViewBag.machines).Count) Equipement trouvees
+      </p>*@
+    </div>
+    <input
       class="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm w-72"
-      placeholder="Rechercher par nom, IP ou ID…" value="">
+      placeholder="Rechercher par nom, IP ou ID…"
+      value="@Context.Request.Query["search"]"
+      onkeydown="handleSearchKey(event)"
+    >
   </div>
-  <div class="flex flex-wrap gap-2"><button
-      class="rounded-full border px-3 py-1 text-xs transition border-primary bg-primary text-primary-foreground">Tous</button><button
-      class="rounded-full border px-3 py-1 text-xs transition bg-card hover:bg-accent">Critique</button><button
-      class="rounded-full border px-3 py-1 text-xs transition bg-card hover:bg-accent">Stable</button><button
-      class="rounded-full border px-3 py-1 text-xs transition bg-card hover:bg-accent">Rétabli
-      (documenté)</button><button
-      class="rounded-full border px-3 py-1 text-xs transition bg-card hover:bg-accent">Rétabli (sans
-      documentation)</button></div>
+  <div class="flex flex-wrap gap-2">
+    
+    <button
+      onclick="setState(null)"
+      class="rounded-full border px-3 py-1 text-xs transition bg-card hover:bg-accent">
+      Tous
+    </button>
+    <button
+      onclick="setState(@((int)MachineState.Critique))"
+      class="rounded-full border px-3 py-1 text-xs transition bg-card hover:bg-accent">
+      Critique
+    </button>
+    <button
+      onclick="setState(@((int)MachineState.Stable))"
+      class="rounded-full border px-3 py-1 text-xs transition bg-card hover:bg-accent">
+      Stable
+    </button>
+    <button
+      onclick="setState(@((int)MachineState.RetabliDocumente))"
+      class="rounded-full border px-3 py-1 text-xs transition bg-card hover:bg-accent">
+      Rétabli (documenté)
+    </button>
+    <button
+      onclick="setState(@((int)MachineState.RetabliUndocumente))"
+      class="rounded-full border px-3 py-1 text-xs transition bg-card hover:bg-accent">
+      Rétabli (sans documentation)
+    </button>
+  </div>
+  <div class="flex justify-end">
+    <button class="inline-flex rounded-md items-center gap-1.5 px-2.5 py-1 font-medium bg-status-stable text-status-critical-foreground" onclick="openCreateModal()">
+      + Ajouter Une Equipement
+    </button>
+  </div>
   <div class="overflow-hidden rounded-xl border bg-card shadow-sm">
     <table class="w-full text-sm">
       <thead class="bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
-        <tr>
-          <th class="px-4 py-3">ID</th>
-          <th class="px-4 py-3">Équipement</th>
-          <th class="px-4 py-3">Type</th>
-          <th class="px-4 py-3">IP</th>
-          <th class="px-4 py-3">Site</th>
-          <th class="px-4 py-3">Uptime</th>
-          <th class="px-4 py-3">Dernier check</th>
-          <th class="px-4 py-3">État</th>
-          <th class="px-4 py-3 text-right">Action</th>
-        </tr>
+      <tr>
+        <th class="px-4 py-3">ID</th>
+        <th class="px-4 py-3">Équipement</th>
+        <th class="px-4 py-3">Type</th>
+        <th class="px-4 py-3">IP</th>
+        <th class="px-4 py-3">Site</th>
+        <th class="px-4 py-3">Uptime</th>
+        <th class="px-4 py-3">Dernier check</th>
+        <th class="px-4 py-3">État</th>
+        <th class="px-4 py-3 text-right">Action</th>
+      </tr>
       </thead>
       <tbody>
       @foreach (Machine? machine  in ViewBag.machines)
@@ -40,8 +71,8 @@
           <td class="px-4 py-3 text-muted-foreground">@machine?.Type</td>
           <td class="px-4 py-3 font-mono text-xs">@machine?.Ip</td>
           <td class="px-4 py-3 text-muted-foreground">@machine?.Site</td>
-          <td class="px-4 py-3">@machine?.BootTime</td>
-          <td class="px-4 py-3 text-muted-foreground">@machine?.LastReport?.CreationTime</td>
+          <td class="px-4 py-3">@machine?.UpTime</td>
+          <td class="px-4 py-3 text-muted-foreground">@machine?.LastReport?.LastCheck</td>
           <td class="px-4 py-3">
             @switch (@machine?.LastReport?.State)
             {
@@ -56,7 +87,7 @@
               } 
               case MachineState.Critique :
               {
-            <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-critical text-status-critical-foreground"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Critique</span>
+                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-critical text-status-critical-foreground"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Critique</span>
                 
                 break;
               } 
@@ -68,15 +99,24 @@
               } 
               case MachineState.RetabliUndocumente :
               {
-            <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-undocumented text-status-undocumented-foreground"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Rétabli (sans documentation)</span>
+                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-undocumented text-status-undocumented-foreground"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Rétabli (undocumente)</span>
                 
                 break;
               } 
             }
-            </td>
+          </td>
           <td class="px-4 py-3 text-right">
             <button
-              onclick="alert(@machine?.Name)"
+              onclick='openModal({
+              id: "@machine.Id",
+              name: "@machine.Name",
+              type: "@machine.Type",
+              ip: "@machine.Ip",
+              site: "@machine.Site",
+              bootTime: "@machine.BootTime",
+              state: "@machine.LastReport?.State",
+              reportId: "@machine.LastReport?.Id"
+              })'
               class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs">
               <svg
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -89,11 +129,213 @@
               </svg> Détail</button></td>
         </tr>
       }
+      
       </tbody>
     </table>
+    
+    <div class="flex justify-end p-3">
+      <nav class="flex items-center gap-2 mt-4">
+
+        <button onclick="prevPage()" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs">
+          Prev
+        </button>
+        <button onclick="nextPage()" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs">
+          Next
+        </button>
+
+      </nav>
+    </div>
   </div>
 </div>
+<div id="modalOverlay1"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(0,0,0,0.5); z-index:999;"
+     onclick="closeModal()">
 
+  <div id="machineModal"
+       style="position:absolute; top:50%; left:50%;
+         transform:translate(-50%, -50%);
+         width:700px; background:white; border-radius:10px;
+         padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.3);"
+       onclick="event.stopPropagation()">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h3 style="margin:0;">Machine Details</h3>
+
+      <button onclick="closeModal()"
+              style="border:none; background:none; font-size:20px; cursor:pointer;">
+        ✖
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div style="display:flex; justify-content:space-between;">
+
+      <!-- Left -->
+      <div style="width:48%;">
+        <p><strong>ID:</strong> <span id="m-id"></span></p>
+        <p><strong>Name:</strong> <span id="m-name"></span></p>
+        <p><strong>Type:</strong> <span id="m-type"></span></p>
+        <p><strong>IP:</strong> <span id="m-ip"></span></p>
+      </div>
+
+      <!-- Right -->
+      <div style="width:48%;">
+        <p><strong>Site:</strong> <span id="m-site"></span></p>
+        <p><strong>Boot Time:</strong> <span id="m-boot"></span></p>
+        <p><strong>Last State:</strong> <span id="m-state"></span></p>
+        <p><strong>Last Report:</strong> <span id="m-report"></span></p>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<div id="modalOverlay"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(0,0,0,0.5); z-index:999;"
+     onclick="closeModal()">
+
+  <div style="position:absolute; top:50%; left:50%;
+       transform:translate(-50%, -50%);
+       width:600px; background:white; border-radius:10px;
+       padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.3);"
+       onclick="event.stopPropagation()">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h3 style="margin:0;">Create Machine</h3>
+
+      <button onclick="closeModal()"
+              style="border:none; background:none; font-size:20px; cursor:pointer;">
+        ✖
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form method="post" action="/Etat/Create">
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+
+        <input name="name" required
+               placeholder="Name"
+               style="padding:8px; border:1px solid #ccc; border-radius:6px;">
+
+        <input name="type" required
+               placeholder="Type"
+               style="padding:8px; border:1px solid #ccc; border-radius:6px;">
+
+        <input name="ip" required
+               placeholder="IP Address"
+               style="padding:8px; border:1px solid #ccc; border-radius:6px;">
+
+        <input name="site" required
+               placeholder="Site"
+               style="padding:8px; border:1px solid #ccc; border-radius:6px;">
+
+        <input name="bootTime" required
+               type="datetime-local"
+               style="padding:8px; border:1px solid #ccc; border-radius:6px;">
+
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
+
+        <button type="button" onclick="closeModal()"
+                style="padding:8px 12px; border:1px solid #ccc; background:#eee; border-radius:6px;">
+          Cancel
+        </button>
+
+        <button type="submit"
+                style="padding:8px 12px; border:none; background:#2563eb; color:white; border-radius:6px;">
+          Save
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+<script>
+  @*document.getElementById(search)*@
+  function getPage() {
+    const url = new URL(window.location.href);
+    const page = parseInt(url.searchParams.get("page"));
+    return isNaN(page) ? 0 : page;
+  }
+  function setPage(page) {
+    const url = new URL(window.location.href);
+
+    if (page) {
+      url.searchParams.set("page", page);
+    } else {
+      url.searchParams.delete("page");
+    }
+
+    window.location.href = url.toString();
+  }
+function setState(state) {
+    const url = new URL(window.location.href);
+    if (state) {
+      url.searchParams.set("state", state);
+    }else{
+      url.searchParams.delete("state");
+    }
+    window.location.href = url.toString();
+}
+  function nextPage() {
+    setPage(getPage() + 1);
+  }
+
+  function prevPage() {
+    setPage(Math.max(getPage() - 1, 0));
+  }
+function handleSearchKey(event) {
+  if (event.key === "Enter") {
+    const value = event.target.value;
+
+    const url = new URL(window.location.href);
+
+    if (value) {
+      url.searchParams.set("search", value);
+    } else {
+      url.searchParams.delete("search");
+    }
+
+    window.location.href = url.toString();
+  }
+}
+  function openModal(machine) {
+    document.getElementById("m-id").innerText = machine.id;
+    document.getElementById("m-name").innerText = machine.name;
+    document.getElementById("m-type").innerText = machine.type;
+    document.getElementById("m-ip").innerText = machine.ip;
+    document.getElementById("m-site").innerText = machine.site;
+    document.getElementById("m-boot").innerText = machine.bootTime;
+
+    document.getElementById("m-state").innerText = machine.state ?? "N/A";
+    document.getElementById("m-report").innerText = machine.reportId ?? "N/A";
+
+    document.getElementById("modalOverlay1").style.display = "block";
+  }
+
+  function closeModal() {
+    document.getElementById("modalOverlay").style.display = "none";
+    document.getElementById("modalOverlay1").style.display = "none";
+    
+  }
+  function openCreateModal() {
+    document.getElementById("modalOverlay").style.display = "block";
+  }
+
+
+
+
+
+</script>
 @*
 // stable badge
 <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-status-stable text-status-stable-foreground">

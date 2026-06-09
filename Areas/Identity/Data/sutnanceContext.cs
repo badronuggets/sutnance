@@ -28,7 +28,7 @@ public class sutnanceContext : IdentityDbContext<sutnanceUser>
             .HasOne(r => r.Machine)
             .WithMany()
             .HasForeignKey(r => r.MachineId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         // =====================
         // Historique → Machine
@@ -37,7 +37,7 @@ public class sutnanceContext : IdentityDbContext<sutnanceUser>
             .HasOne(h => h.Machine)
             .WithMany()
             .HasForeignKey(h => h.MachineId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         // =====================
         // Historique → Report
@@ -46,6 +46,6 @@ public class sutnanceContext : IdentityDbContext<sutnanceUser>
             .HasOne(h => h.Report)
             .WithMany()
             .HasForeignKey(h => h.ReportId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
